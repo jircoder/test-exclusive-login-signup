@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #1a3a5f; --secondary: #2c5f8a; --accent: #4a90e2; --light: #f5f7fa; --dark: #0d1b2a; --success: #28a745; }
+        body { background: linear-gradient(135deg, var(--primary), var(--dark)); color: var(--light); min-height: 100vh; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); margin-bottom: 30px; }
+        .logo h1 { font-size: 28px; color: white; }
+        .user-info { text-align: right; }
+        .user-info h2 { font-size: 20px; margin-bottom: 5px; }
+        .user-info p { color: rgba(255, 255, 255, 0.7); }
+        .dashboard { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dashboard h2 { font-size: 24px; margin-bottom: 20px; color: white; }
+        .user-details { background: rgba(0, 0, 0, 0.2); padding: 25px; border-radius: 12px; }
+        .detail-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .detail-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .detail-label { font-weight: 600; color: var(--accent); }
+        .detail-value { color: white; }
+        .logout-btn { background: var(--secondary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; }
+        .logout-btn:hover { background: #224a6a; transform: translateY(-2px); }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transform: translateX(200%); transition: transform 0.3s ease; z-index: 1000; }
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: var(--success); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1><i class="fas fa-file-contract"></i> RAF System</h1>
+            </div>
+            <div class="user-info">
+                <h2 id="userFullName">User Name</h2>
+                <p>Verified User</p>
+            </div>
+        </header>
+        
+        <div class="dashboard">
+            <h2><i class="fas fa-user-circle"></i> Account Dashboard</h2>
+            <div class="user-details">
+                <div class="detail-item">
+                    <span class="detail-label">Full Name:</span>
+                    <span class="detail-value" id="fullNameDisplay">John Smith</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email Address:</span>
+                    <span class="detail-value" id="emailDisplay">john@example.com</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">RAF Number:</span>
+                    <span class="detail-value" id="rafNumberDisplay">02000395945</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Account Status:</span>
+                    <span class="detail-value" style="color: var(--success);">✅ Verified</span>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const userRole = localStorage.getItem('userRole');
+            const userEmail = localStorage.getItem('userEmail');
+            const userFullName = localStorage.getItem('userFullName');
+            const userRafNumber = localStorage.getItem('userRafNumber');
+            
+            if (!userRole || userRole !== 'user' || !userEmail) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display user info
+            document.getElementById('userFullName').textContent = userFullName;
+            document.getElementById('fullNameDisplay').textContent = userFullName;
+            document.getElementById('emailDisplay').textContent = userEmail;
+            document.getElementById('rafNumberDisplay').textContent = userRafNumber;
+        });
+        
+        function logout() {
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userFullName');
+            localStorage.removeItem('userRafNumber');
+            window.location.href = 'index.html';
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => notification.classList.remove('show'), 5000);
+        }
+    </script>
+</body>
+</html>

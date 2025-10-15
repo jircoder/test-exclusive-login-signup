@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAF Registration System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #1a3a5f; --secondary: #2c5f8a; --accent: #4a90e2; --light: #f5f7fa; --dark: #0d1b2a; --success: #28a745; --warning: #ffc107; --danger: #dc3545; }
+        body { background: linear-gradient(135deg, var(--primary), var(--dark)); color: var(--light); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .container { width: 100%; max-width: 600px; }
+        .card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(10px); border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .card-header { text-align: center; margin-bottom: 30px; }
+        .card-header h1 { font-size: 32px; margin-bottom: 10px; color: white; }
+        .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .tab { padding: 12px 24px; cursor: pointer; font-weight: 600; color: rgba(255, 255, 255, 0.7); transition: all 0.3s ease; }
+        .tab.active { color: white; border-bottom: 3px solid var(--accent); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: white; }
+        input { width: 100%; padding: 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.2); color: white; font-size: 16px; transition: all 0.3s ease; }
+        input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3); }
+        .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; background: var(--accent); color: white; }
+        .btn:hover { background: #3a7bc8; transform: translateY(-2px); }
+        .file-upload { border: 2px dashed rgba(255, 255, 255, 0.3); border-radius: 8px; padding: 40px 20px; text-align: center; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; }
+        .file-upload:hover { border-color: var(--accent); background: rgba(74, 144, 226, 0.1); }
+        .file-upload i { font-size: 60px; margin-bottom: 15px; color: var(--accent); }
+        .file-upload input { display: none; }
+        .file-name { background: rgba(0, 0, 0, 0.2); padding: 10px 15px; border-radius: 6px; margin-top: 15px; word-break: break-all; text-align: center; }
+        .notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transform: translateX(200%); transition: transform 0.3s ease; z-index: 1000; }
+        .notification.show { transform: translateX(0); }
+        .notification.success { background: var(--success); }
+        .notification.error { background: var(--danger); }
+        .file-info { color: rgba(255, 255, 255, 0.7); font-size: 14px; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="fas fa-file-contract"></i> RAF Registration System</h1>
+                <p>Login or create a new account</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="login">Login</div>
+                <div class="tab" data-tab="register">Register</div>
+            </div>
+            
+            <div class="tab-content active" id="login-tab">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
+            
+            <div class="tab-content" id="register-tab">
+                <form id="registrationForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" placeholder="your.email@example.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rafNumber">RAF Number</label>
+                        <input type="text" id="rafNumber" placeholder="e.g., 02000395945" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rafDocument">Registration Assessment Form (RAF)</label>
+                        <div class="file-upload" id="fileUpload">
+                            <i class="fas fa-file-upload"></i>
+                            <p>Click to upload your RAF document</p>
+                            <p class="file-info">PDF, JPG, PNG accepted (max 10MB)</p>
+                            <input type="file" id="rafFile" accept=".pdf,.jpg,.jpeg,.png" required>
+                        </div>
+                        <div class="file-name" id="fileName">No file selected</div>
+                    </div>
+                    
+                    <button type="submit" class="btn">Submit for Approval</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // Your Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSPksEXlRt8Qz0GE6ntPgjOqJFFe4e01mUoJjpOWqe5hJuOFuEYtqYId3aLL-1npxp/exec';
+        
+        // DOM Elements
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const loginForm = document.getElementById('loginForm');
+        const registrationForm = document.getElementById('registrationForm');
+        const fileUpload = document.getElementById('fileUpload');
+        const rafFile = document.getElementById('rafFile');
+        const fileName = document.getElementById('fileName');
+        const notification = document.getElementById('notification');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+            
+            // File upload
+            fileUpload.addEventListener('click', () => rafFile.click());
+            rafFile.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    if (file.size > 10 * 1024 * 1024) {
+                        showNotification('File size exceeds 10MB limit', 'error');
+                        this.value = '';
+                        fileName.textContent = 'No file selected';
+                        return;
+                    }
+                    
+                    // Check file type - accept PDF and images
+                    const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+                    if (!validTypes.includes(file.type)) {
+                        showNotification('Only PDF, JPG, and PNG files are accepted', 'error');
+                        this.value = '';
+                        fileName.textContent = 'No file selected';
+                        return;
+                    }
+                    fileName.textContent = file.name;
+                }
+            });
+            
+            // Form submissions
+            loginForm.addEventListener('submit', handleLogin);
+            registrationForm.addEventListener('submit', handleRegistration);
+        });
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const formData = new FormData();
+                formData.append('action', 'login');
+                formData.append('email', email);
+                formData.append('password', password);
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.role === 'admin') {
+                        localStorage.setItem('userRole', 'admin');
+                        localStorage.setItem('userEmail', email);
+                        window.location.href = 'admin.html';
+                    } else if (result.role === 'user') {
+                        localStorage.setItem('userRole', 'user');
+                        localStorage.setItem('userEmail', email);
+                        localStorage.setItem('userFullName', result.fullName);
+                        localStorage.setItem('userRafNumber', result.rafNumber);
+                        window.location.href = 'homepage.html';
+                    }
+                } else {
+                    showNotification(result.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showNotification('Login failed. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+        
+        async function handleRegistration(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const rafNumber = document.getElementById('rafNumber').value;
+            const file = rafFile.files[0];
+            
+            if (!file) {
+                showNotification('Please select a RAF document', 'error');
+                return;
+            }
+            
+            try {
+                // Convert file to base64
+                const fileReader = new FileReader();
+                fileReader.onload = async function() {
+                    const base64File = fileReader.result.split(',')[1]; // Remove data URL prefix
+                    const fileType = file.type;
+                    const fileName = file.name;
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'register');
+                    formData.append('fullName', fullName);
+                    formData.append('email', email);
+                    formData.append('rafNumber', rafNumber);
+                    formData.append('fileData', base64File);
+                    formData.append('fileName', fileName);
+                    formData.append('fileType', fileType);
+                    
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showNotification('Registration submitted successfully! Awaiting admin approval.', 'success');
+                        registrationForm.reset();
+                        fileName.textContent = 'No file selected';
+                    } else {
+                        showNotification(result.error || 'Registration failed', 'error');
+                    }
+                };
+                fileReader.readAsDataURL(file);
+            } catch (error) {
+                showNotification('Registration failed. Please try again.', 'error');
+                console.error('Registration error:', error);
+            }
+        }
+        
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            setTimeout(() => notification.classList.remove('show'), 5000);
+        }
+    </script>
+</body>
+</html>
