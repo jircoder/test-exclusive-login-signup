@@ -41,35 +41,24 @@
         <div class="card">
             <div class="card-header">
                 <h1><i class="fas fa-file-contract"></i> RAF Registration System</h1>
-                <p>Login or create a new account</p>
+                <p>Register your RAF application</p>
             </div>
             
             <div class="tabs">
-                <div class="tab active" data-tab="login">Login</div>
-                <div class="tab" data-tab="register">Register</div>
+                <div class="tab active" data-tab="register">Register</div>
+                <div class="tab" data-tab="login">Login</div>
             </div>
             
-            <div class="tab-content active" id="login-tab">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="loginEmail">Email Address</label>
-                        <input type="email" id="loginEmail" placeholder="your.email@example.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                    </div>
-                    
-                    <button type="submit" class="btn">Login</button>
-                </form>
-            </div>
-            
-            <div class="tab-content" id="register-tab">
+            <div class="tab-content active" id="register-tab">
                 <form id="registrationForm">
                     <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input type="text" id="studentId" placeholder="e.g., 02000395945" required>
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="fullName">Full Name</label>
-                        <input type="text" id="fullName" placeholder="Enter your full name" required>
+                        <input type="text" id="fullName" placeholder="e.g., Jirmaic P. Delos Santos" required>
                     </div>
                     
                     <div class="form-group">
@@ -78,12 +67,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="rafNumber">RAF Number</label>
-                        <input type="text" id="rafNumber" placeholder="e.g., 02000395945" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="rafDocument">Registration Assessment Form (RAF)</label>
+                        <label for="rafProof">RAF Proof Document</label>
                         <div class="file-upload" id="fileUpload">
                             <i class="fas fa-file-upload"></i>
                             <p>Click to upload your RAF document</p>
@@ -96,16 +80,30 @@
                     <button type="submit" class="btn">Submit for Approval</button>
                 </form>
             </div>
+            
+            <div class="tab-content" id="login-tab">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" placeholder="your.generated@email.com" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
         </div>
     </div>
     
     <div class="notification" id="notification"></div>
     
     <script>
-        // Your Google Apps Script Web App URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSPksEXlRt8Qz0GE6ntPgjOqJFFe4e01mUoJjpOWqe5hJuOFuEYtqYId3aLL-1npxp/exec';
         
-        // DOM Elements
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
         const loginForm = document.getElementById('loginForm');
@@ -115,9 +113,7 @@
         const fileName = document.getElementById('fileName');
         const notification = document.getElementById('notification');
         
-        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     tabs.forEach(t => t.classList.remove('active'));
@@ -127,7 +123,6 @@
                 });
             });
             
-            // File upload
             fileUpload.addEventListener('click', () => rafFile.click());
             rafFile.addEventListener('change', function() {
                 if (this.files.length > 0) {
@@ -138,8 +133,6 @@
                         fileName.textContent = 'No file selected';
                         return;
                     }
-                    
-                    // Check file type - accept PDF and images
                     const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
                     if (!validTypes.includes(file.type)) {
                         showNotification('Only PDF, JPG, and PNG files are accepted', 'error');
@@ -151,7 +144,6 @@
                 }
             });
             
-            // Form submissions
             loginForm.addEventListener('submit', handleLogin);
             registrationForm.addEventListener('submit', handleRegistration);
         });
@@ -183,7 +175,7 @@
                         localStorage.setItem('userRole', 'user');
                         localStorage.setItem('userEmail', email);
                         localStorage.setItem('userFullName', result.fullName);
-                        localStorage.setItem('userRafNumber', result.rafNumber);
+                        localStorage.setItem('userStudentId', result.studentId);
                         window.location.href = 'homepage.html';
                     }
                 } else {
@@ -197,9 +189,9 @@
         
         async function handleRegistration(e) {
             e.preventDefault();
+            const studentId = document.getElementById('studentId').value;
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
-            const rafNumber = document.getElementById('rafNumber').value;
             const file = rafFile.files[0];
             
             if (!file) {
@@ -208,18 +200,17 @@
             }
             
             try {
-                // Convert file to base64
                 const fileReader = new FileReader();
                 fileReader.onload = async function() {
-                    const base64File = fileReader.result.split(',')[1]; // Remove data URL prefix
+                    const base64File = fileReader.result.split(',')[1];
                     const fileType = file.type;
                     const fileName = file.name;
                     
                     const formData = new FormData();
                     formData.append('action', 'register');
+                    formData.append('studentId', studentId);
                     formData.append('fullName', fullName);
                     formData.append('email', email);
-                    formData.append('rafNumber', rafNumber);
                     formData.append('fileData', base64File);
                     formData.append('fileName', fileName);
                     formData.append('fileType', fileType);
